@@ -69,19 +69,7 @@ You'll always be welcome back anytime.`
     .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
     .setTimestamp();
 
-channel.send({ embeds: [embed] });const embed = new EmbedBuilder()
-  .setColor("#81058D")
-  .setTitle(`🌙 Farewell from ${member.guild.name}`)
-  .setDescription(
-    `<@${member.id}> has left the server.
-
-Thanks for being part of our journey 💜
-You'll always be welcome back anytime.`
-  )
-  .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-  .setTimestamp();
-
-channel.send({ embeds: [embed] });
+  channel.send({ embeds: [embed] });
 });
 
 // =====================
