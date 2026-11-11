@@ -1,3 +1,4 @@
+
 // =====================
 // EMBED BOT (By ZenTheCosmic - UPGRADE)
 // =====================
@@ -22,7 +23,7 @@ client.once("ready", () => {
 // =====================
 // WELCOME
 // =====================
-client.on("guildMemberAdd", (member) => {
+client.on("guildMemberAdd", async (member) => {
   const channel = member.guild.channels.cache.get("1434403930653069430");
   if (!channel) return;
 
@@ -47,13 +48,13 @@ Once again, welcome — and have an amazing time with us 💫`
     .setFooter({ text: `Member #${member.guild.memberCount}` })
     .setTimestamp();
 
-channel.send({ embeds: [embed] });
+  await channel.send({ embeds: [embed] });
 });
 
 // =====================
 // LEAVE
 // =====================
-client.on("guildMemberRemove", (member) => {
+client.on("guildMemberRemove", async (member) => {
   const channel = member.guild.channels.cache.get("1489566955290755203");
   if (!channel) return;
 
@@ -69,25 +70,13 @@ You'll always be welcome back anytime.`
     .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
     .setTimestamp();
 
-channel.send({ embeds: [embed] });const embed = new EmbedBuilder()
-  .setColor("#81058D")
-  .setTitle(`🌙 Farewell from ${member.guild.name}`)
-  .setDescription(
-    `<@${member.id}> has left the server.
-
-Thanks for being part of our journey 💜
-You'll always be welcome back anytime.`
-  )
-  .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-  .setTimestamp();
-
-channel.send({ embeds: [embed] });
+  await channel.send({ embeds: [embed] });
 });
 
 // =====================
 // BAN
 // =====================
-client.on("guildBanAdd", (ban) => {
+client.on("guildBanAdd", async (ban) => {
   const channel = ban.guild.channels.cache.get("1489567134521753761");
   if (!channel) return;
 
@@ -95,13 +84,14 @@ client.on("guildBanAdd", (ban) => {
     .setColor("#FF0000")
     .setTitle("🚫 User Banned")
     .setDescription(
-`<@${ban.user.id}> has been permanently removed from **${ban.guild.name}**.`
+      `<@${ban.user.id}> has been permanently removed from **${ban.guild.name}**.`
     )
     .setThumbnail(ban.user.displayAvatarURL({ dynamic: true }))
     .setTimestamp();
 
-  channel.send({ embeds: [embed] });
+  await channel.send({ embeds: [embed] });
 });
+
 // =====================
 // EMBED COMMAND (UPGRADED)
 // =====================
@@ -114,7 +104,7 @@ client.on("messageCreate", async (message) => {
 
   let content = message.content.slice(7).trim();
 
-  // ✅ NEW: Detect mentioned user
+  // Detect mentioned user
   const mentionedUser = message.mentions.users.first() || message.author;
 
   const args = content.split("|").map(a => a.trim());
@@ -137,7 +127,7 @@ client.on("messageCreate", async (message) => {
     description = args[1];
   }
 
-  // ✅ NEW: Replace custom variables
+  // Replace custom variables
   if (description) {
     description = description
       .replace(/{user\.mention}/g, `<@${mentionedUser.id}>`)
@@ -162,41 +152,41 @@ client.on("messageCreate", async (message) => {
     return message.reply("Use: !embed #color | Title | Description");
   }
 
-  const embed = new EmbedBuilder()
-    .setColor(color)
-    .setTitle(title)
-    .setDescription(description);
-
-  if (showIcon) {
-    embed.setThumbnail(message.author.displayAvatarURL({ dynamic: true }));
-  }
-
-  if (authorName) {
-    embed.setAuthor({
-      name: authorName,
-      iconURL: authorIcon || undefined
-    });
-  }
-
-  // ✅ NEW: Smart thumbnail handling
-  if (thumbnail) {
-    if (thumbnail === "{user.avatar}") {
-      embed.setThumbnail(mentionedUser.displayAvatarURL({ dynamic: true }));
-    } else {
-      embed.setThumbnail(thumbnail);
-    }
-  }
-
-  if (image) embed.setImage(image);
-
-  if (footerText) {
-    embed.setFooter({
-      text: footerText,
-      iconURL: footerIcon || undefined
-    });
-  }
-
   try {
+    const embed = new EmbedBuilder()
+      .setColor(color)
+      .setTitle(title)
+      .setDescription(description);
+
+    if (showIcon) {
+      embed.setThumbnail(message.author.displayAvatarURL({ dynamic: true }));
+    }
+
+    if (authorName) {
+      embed.setAuthor({
+        name: authorName,
+        iconURL: authorIcon || undefined
+      });
+    }
+
+    // Smart thumbnail handling
+    if (thumbnail) {
+      if (thumbnail === "{user.avatar}") {
+        embed.setThumbnail(mentionedUser.displayAvatarURL({ dynamic: true }));
+      } else {
+        embed.setThumbnail(thumbnail);
+      }
+    }
+
+    if (image) embed.setImage(image);
+
+    if (footerText) {
+      embed.setFooter({
+        text: footerText,
+        iconURL: footerIcon || undefined
+      });
+    }
+
     await message.delete().catch(() => {
       console.log("[WARN] Failed to delete message");
     });
